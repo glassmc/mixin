@@ -1,0 +1,13 @@
+implementations = [
+    "1.7.10",
+    "1.8.9",
+    "1.17"
+]
+
+[listeners]
+initialize = [
+    "io.github.glassmc.example.client.ExampleClientInitializeListener"
+]
+
+[dependencies]
+client = "*"

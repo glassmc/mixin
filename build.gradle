@@ -1,0 +1,30 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url = 'https://jitpack.io/'
+        }
+    }
+
+    dependencies {
+        classpath 'com.github.glassmc:kiln:v0.2.0'
+    }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'kiln-standard'
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://jitpack.io/'
+    }
+}
+
+dependencies {
+    implementation 'com.github.glassmc:loader:v0.3.1'
+}
+
+compileJava.dependsOn("processResources")

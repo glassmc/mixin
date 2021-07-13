@@ -1,0 +1,23 @@
+apply plugin: 'java-library'
+apply plugin: 'kiln-standard'
+
+import static io.github.glassmc.kiln.standard.DependencyHandlerExtension.*
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://jitpack.io/'
+    }
+}
+
+dependencies {
+    api project(':impl:client')
+    compileOnly minecraft('client', '1.8.9', 'yarn')
+    implementation 'com.github.glassmc:loader:v0.3.1'
+
+    api 'org.ow2.asm:asm-tree:9.2'
+}
+
+compileJava.dependsOn("processResources")

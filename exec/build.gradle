@@ -1,0 +1,51 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+apply plugin: 'java-library'
+apply plugin: 'kiln-main'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://jitpack.io/'
+    }
+}
+
+configurations {
+    resolvedImplementation
+    implementation.extendsFrom(resolvedImplementation)
+}
+
+dependencies {
+    for(Project shardProject : collectAllProjects(parent)) {
+        if(shardProject.getBuildFile().exists() && shardProject != project) {
+            String name = getName(shardProject)
+            resolvedImplementation project(name.isEmpty() ? ':' : name)
+        }
+    }
+    implementation 'com.github.glassmc:loader:v0.3.1'
+}
+
+List<Project> collectAllProjects(Project project) {
+    List<Project> childProjects = new ArrayList<>()
+    childProjects.add(project)
+
+    for(Project childProject : project.childProjects.values()) {
+        childProjects.addAll(collectAllProjects(childProject))
+    }
+
+    return childProjects
+}
+
+String getName(Project project) {
+    return project.parent != null ? getName(project.parent) + ':' + project.getName() : ''
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency {
+            it.configuration != 'runtimeElements'
+        })
+    }
+}

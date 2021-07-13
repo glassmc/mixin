@@ -1,0 +1,10 @@
+[listeners]
+initialize = [
+    "io.github.glassmc.example.client.v1_8_9.ExampleInitializeListener"
+]
+terminate = [
+    "io.github.glassmc.example.client.v1_8_9.ExampleTerminateListener"
+]
+
+[dependencies]
+client = "1.8.9"
