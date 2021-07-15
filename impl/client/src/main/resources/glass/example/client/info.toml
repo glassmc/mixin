@@ -1,7 +1,5 @@
 implementations = [
-    "1.7.10",
-    "1.8.9",
-    "1.17"
+    "1.8.9"
 ]
 
 [listeners]

@@ -1,12 +1,5 @@
-# Glass Example Shard
-A basic shard that demonstrates **optional implementations**, and **interfaces**.
-
-# Basic Information
-A lot of stuff will be more complex than other mod loaders, but it should be make easier in the future. Also keep in mind that glass is in design more complex, so there will always be a little more complex.
-
-**[exec](exec) directory:** Used for running, and eventually will be used for compiling the mod. Allows everything to work with multiple versions of minecraft.
-
-**impl directory(s):** Used for optional implementations (in short, sections of code that are only loaded / ran if their dependencies have already been loaded). In this example they are used for applying the shard to multiple versions.
+# Glass - Mixin
+A shard that will eventually allow for (hopefully) simple integration with mixin. Allowing anyone to implement it (even alongside raw asm).
 
 # Setup
 Instructions should be relatively clear, but don't be afraid to ask because there is very likely to be something missing.

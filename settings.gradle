@@ -1,7 +1,5 @@
 include(
         ':exec',
         ':impl:client',
-        ':impl:client:impl:1.7.10',
-        ':impl:client:impl:1.8.9',
-        ':impl:client:impl:1.17'
+        ':impl:client:impl:1.8.9'
 )

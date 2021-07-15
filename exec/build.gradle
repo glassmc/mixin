@@ -10,21 +10,25 @@ repositories {
     maven {
         url = 'https://jitpack.io/'
     }
+    maven {
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
 }
 
 configurations {
-    resolvedImplementation
-    implementation.extendsFrom(resolvedImplementation)
+    resolvedApi
+    api.extendsFrom(resolvedApi)
 }
 
 dependencies {
     for(Project shardProject : collectAllProjects(parent)) {
         if(shardProject.getBuildFile().exists() && shardProject != project) {
             String name = getName(shardProject)
-            resolvedImplementation project(name.isEmpty() ? ':' : name)
+            Project project = project(name.isEmpty() ? ':' : name)
+            resolvedApi project
         }
     }
-    implementation 'com.github.glassmc:loader:v0.3.1'
+    implementation 'com.github.glassmc:loader:v0.3.2'
 }
 
 List<Project> collectAllProjects(Project project) {
@@ -44,8 +48,9 @@ String getName(Project project) {
 
 shadowJar {
     dependencies {
-        exclude(dependency {
+        configurations = [project.configurations.resolvedApi]
+        /*exclude(dependency {
             it.configuration != 'runtimeElements'
-        })
+        })*/
     }
 }

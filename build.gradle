@@ -1,13 +1,14 @@
 buildscript {
     repositories {
         mavenCentral()
+        mavenLocal()
         maven {
             url = 'https://jitpack.io/'
         }
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:v0.2.0'
+        classpath 'com.github.glassmc:kiln:0.2.1'
     }
 }
 
@@ -21,10 +22,13 @@ repositories {
     maven {
         url = 'https://jitpack.io/'
     }
+    maven {
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:v0.3.1'
+    api 'org.spongepowered:mixin:0.8.3'
 }
 
 compileJava.dependsOn("processResources")
