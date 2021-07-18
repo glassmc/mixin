@@ -1,0 +1,7 @@
+implementations = [
+    "1.8.9"
+]
+
+[environment]
+    [environment.has]
+    client = "*"

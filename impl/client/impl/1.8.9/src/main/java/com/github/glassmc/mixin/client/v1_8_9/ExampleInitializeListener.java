@@ -1,4 +1,4 @@
-package com.github.glassmc.example.client.v1_8_9;
+package com.github.glassmc.mixin.client.v1_8_9;
 
 import com.github.glassmc.loader.GlassLoader;
 import com.github.glassmc.loader.Listener;

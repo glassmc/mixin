@@ -3,6 +3,8 @@ apply plugin: 'kiln-standard'
 
 
 import com.github.glassmc.kiln.standard.CustomRemapper
+import org.objectweb.asm.*
+import org.objectweb.asm.tree.*
 
 import static com.github.glassmc.kiln.standard.DependencyHandlerExtension.*
 
@@ -21,7 +23,7 @@ repositories {
 dependencies {
     api project(':impl:client')
     compileOnly minecraft('client', '1.8.9', 'yarn')
-    compileOnly 'com.github.glassmc:loader:v0.3.2'
+    compileOnly 'com.github.glassmc:loader:v0.4.0'
 
     api 'org.ow2.asm:asm-tree:9.2'
     api 'org.ow2.asm:asm-commons:9.2'
@@ -30,58 +32,147 @@ dependencies {
     api 'org.spongepowered:mixin:0.8.3'
 }
 
+compileJava.dependsOn("processResources")
+
 kiln {
     remappers = [new MixinRemapper()]
 }
 
 class MixinRemapper extends CustomRemapper {
 
-    private boolean foundMixinDeclaration = false
-    private String currentMixinClass = null
-
-    private boolean foundInjectDeclaration = false;
+    private final Map<String, String> mixinClasses = new HashMap<>()
+    private Map<String, ClassNode> classNodes
 
     @Override
-    String mapAnnotationAttributeName(String descriptor, String name) {
-        System.out.println(descriptor + " " + name)
-        if(descriptor == "Lorg/spongepowered/asm/mixin/Mixin;" && name == "value") {
-            foundMixinDeclaration = true
-        }
+    void map(Map<String, ClassNode> classNodes) {
+        this.classNodes = classNodes
 
-        if(descriptor == "Lorg/spongepowered/asm/mixin/injection/Inject;" && name == "method") {
-            foundInjectDeclaration = true
+        for(String className : classNodes.keySet()) {
+            ClassNode classNode = classNodes.get(className)
+
+            for(FieldNode fieldNode : classNode.fields) {
+                if(this.getMixinClass(className) != null) {
+                    for(AnnotationNode annotationNode : fieldNode.visibleAnnotations) {
+                        if(annotationNode.desc == "Lorg/spongepowered/asm/mixin/Shadow;") {
+                            fieldNode.name = this.mapFieldName(className, fieldNode.name, fieldNode.desc)
+                        }
+                    }
+                }
+            }
+
+            for(MethodNode methodNode : classNode.methods) {
+
+                if(this.getMixinClass(className) != null) {
+                    for(AnnotationNode annotationNode : methodNode.visibleAnnotations) {
+                        if(annotationNode.desc == "Lorg/spongepowered/asm/mixin/gen/Invoker;" ||
+                            annotationNode.desc == "Lorg/spongepowered/asm/mixin/gen/Accessor;" ||
+                            annotationNode.desc == "Lorg/spongepowered/asm/mixin/Overwrite;" ||
+                            annotationNode.desc == "Lorg/spongepowered/asm/mixin/Shadow;") {
+                            methodNode.name = this.mapMethodName(className, methodNode.name, methodNode.desc)
+                        }
+                    }
+
+                    for(AnnotationNode annotationNode : methodNode.visibleAnnotations) {
+                        if(annotationNode.desc == "Lorg/spongepowered/asm/mixin/injection/Inject;" ||
+                                annotationNode.desc == "Lorg/spongepowered/asm/mixin/injection/Redirect;") {
+                            List<String> targets = annotationNode.values.get(annotationNode.values.indexOf("method") + 1) as List<String>
+                            List<String> newTargets = new ArrayList<>()
+                            for(String string : targets) {
+                                int splitIndex = string.indexOf('(')
+                                String name = string.substring(0, splitIndex)
+                                String desc = string.substring(splitIndex)
+                                newTargets.add(this.getParent().mapMethodName(this.getMixinClass(className), name, desc) + this.getParent().mapMethodDesc(desc))
+                            }
+                            int index = annotationNode.values.indexOf(targets)
+                            annotationNode.values.remove(targets)
+                            annotationNode.values.add(index, newTargets)
+                        }
+                        if(annotationNode.values != null && annotationNode.values.contains("at")) {
+                            AnnotationNode atAnnotation = annotationNode.values.get(annotationNode.values.indexOf("at") + 1) as AnnotationNode
+                            if(atAnnotation.values.contains("target")) {
+                                String target = atAnnotation.values.get(atAnnotation.values.indexOf("target") + 1)
+
+                                String[] classMethodSplit = target.split(";")
+                                String className1 = classMethodSplit[0].substring(1)
+                                int methodDescIndex = classMethodSplit[1].indexOf('(')
+                                String methodName = classMethodSplit[1].substring(0, methodDescIndex)
+                                String methodDesc = classMethodSplit[1].substring(methodDescIndex)
+
+                                int targetIndex = atAnnotation.values.indexOf(target)
+                                atAnnotation.values.remove(target)
+                                atAnnotation.values.add(targetIndex, "L" + this.getParent().map(className1) + ";" + this.getParent().mapMethodName(className1, methodName, methodDesc) + this.getParent().mapMethodDesc(methodDesc))
+                            }
+                        }
+                    }
+                }
+
+                for(AbstractInsnNode node : methodNode.instructions.toArray()) {
+                    if(node instanceof FieldInsnNode) {
+                        if(this.getMixinClass(node.owner) != null) {
+                            node.name = this.mapFieldName(node.owner, node.name, node.desc)
+                        }
+                    }
+                    if(node instanceof MethodInsnNode) {
+                        if(this.getMixinClass(node.owner) != null) {
+                            node.name = this.mapMethodName(node.owner, node.name, node.desc)
+                        }
+                    }
+                }
+            }
         }
-        return super.mapAnnotationAttributeName(descriptor, name)
     }
 
-    @Override
-    Object mapValue(Object value) {
-        if(foundMixinDeclaration) {
-            String string = (String) value
-            if(string.startsWith("L")) {
-                currentMixinClass = string.substring(1, string.length() - 1)
-            } else {
-                currentMixinClass = string
+    private String mapMethodName(String className, String methodName, String methodDesc) {
+        String mixinClass = this.getMixinClass(className)
+
+        boolean changed = false
+
+        if(methodName.startsWith("invoke") || methodName.startsWith("call")) {
+            String prefix = methodName.startsWith("invoke") ? "invoke" : "call"
+            String strippedName = methodName.replace(prefix, "")
+            strippedName = strippedName.charAt(0).toLowerCase().toString() + strippedName.substring(1)
+            methodName = this.getParent().mapMethodName(mixinClass, strippedName, methodDesc)
+            if(methodName != strippedName) {
+                changed = true
             }
-            foundMixinDeclaration = false
+            methodName = prefix + methodName.charAt(0).toUpperCase().toString() + methodName.substring(1)
+        } else if(methodName.startsWith("get") || methodName.startsWith("set") || methodName.startsWith("is")) {
+            String prefix = methodName.startsWith("get") ? "get" : methodName.startsWith("set") ? "set" : "is"
+            String strippedName = methodName.replace(prefix, "")
+            strippedName = strippedName.charAt(0).toLowerCase().toString() + strippedName.substring(1)
+            methodName = this.getParent().mapFieldName(mixinClass, strippedName, methodDesc)
+            if(methodName != strippedName) {
+                changed = true
+            }
+            methodName = prefix + methodName.charAt(0).toUpperCase().toString() + methodName.substring(1)
         }
-        if(foundInjectDeclaration) {
-            String string = (String) value
-            int splitIndex = string.indexOf('(')
-            String name = string.substring(0, splitIndex)
-            String desc = string.substring(splitIndex)
 
-            System.out.println(currentMixinClass + " " + name + " " + desc);
-
-            System.out.println(this.getParent().mapMethodName(currentMixinClass.replace(".", "/"), name, desc) + " " + this.getParent().mapMethodDesc(desc))
-            System.out.println(this.getParent().mapMethodName(currentMixinClass.replace(".", "/"), name, desc) + this.getParent().mapMethodDesc(desc))
-
-            foundInjectDeclaration = false
-            return this.getParent().mapMethodName(currentMixinClass.replace(".", "/"), name, desc) + this.getParent().mapMethodDesc(desc)
+        if(!changed) {
+            methodName = this.getParent().mapMethodName(mixinClass, methodName, methodDesc)
         }
-        return super.mapValue(value)
+        return methodName
+    }
+
+    private String mapFieldName(String className, String fieldName, String fieldDesc) {
+        String mixinClass = this.getMixinClass(className)
+        return this.getParent().mapFieldName(mixinClass, fieldName, fieldDesc)
+    }
+
+    private String getMixinClass(String className) {
+        String mixinClass = mixinClasses.get(className)
+
+        if(mixinClass == null) {
+            ClassNode classNode = classNodes.get(className)
+            if(classNode != null) {
+                for(AnnotationNode annotationNode : classNode.invisibleAnnotations) {
+                    if(annotationNode.desc == "Lorg/spongepowered/asm/mixin/Mixin;") {
+                        List<Type> types = annotationNode.values.get(annotationNode.values.indexOf("value") + 1) as List<Type>
+                        mixinClasses.put(className, mixinClass = types.get(0).className.replace(".", "/"))
+                    }
+                }
+            }
+        }
+        return mixinClass;
     }
 
 }
-
-compileJava.dependsOn("processResources")

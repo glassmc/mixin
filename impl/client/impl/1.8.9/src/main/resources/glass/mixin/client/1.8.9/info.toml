@@ -1,0 +1,10 @@
+namespace = "com.github.glassmc.mixin.client.v1_8_9"
+
+[listeners]
+initialize = [
+    "ExampleInitializeListener"
+]
+
+[environment]
+    [environment.has]
+    client = "1.8.9"

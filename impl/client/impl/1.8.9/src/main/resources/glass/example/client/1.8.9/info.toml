@@ -1,7 +1,0 @@
-[listeners]
-initialize = [
-    "com.github.glassmc.example.client.v1_8_9.ExampleInitializeListener"
-]
-
-[dependencies]
-client = "1.8.9"

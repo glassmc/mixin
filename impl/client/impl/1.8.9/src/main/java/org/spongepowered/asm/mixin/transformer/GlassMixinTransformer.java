@@ -25,10 +25,10 @@ public class GlassMixinTransformer implements ITransformer {
         if(!name.startsWith("org.objectweb") && !name.startsWith("org.spongepowered") && !name.startsWith("com.google")) {
             ClassNode classNode = new ClassNode();
             ClassReader classReader = new ClassReader(data);
-            classReader.accept(classNode, 0);
+            classReader.accept(classNode, ClassReader.EXPAND_FRAMES);
 
             if(this.processor.applyMixins(MixinEnvironment.getDefaultEnvironment(), name, classNode)) {
-                ClassWriter classWriter = new ClassWriter(0);
+                ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
                 classNode.accept(classWriter);
                 return classWriter.toByteArray();
             }

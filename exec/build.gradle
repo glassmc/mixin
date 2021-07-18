@@ -28,7 +28,7 @@ dependencies {
             resolvedApi project
         }
     }
-    implementation 'com.github.glassmc:loader:v0.3.2'
+    implementation 'com.github.glassmc:loader:v0.4.0'
 }
 
 List<Project> collectAllProjects(Project project) {

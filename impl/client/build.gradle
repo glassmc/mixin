@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     api project(':')
-    compileOnly 'com.github.glassmc:loader:v0.3.2'
+    compileOnly 'com.github.glassmc:loader:v0.4.0'
 }
 
 compileJava.dependsOn("processResources")
