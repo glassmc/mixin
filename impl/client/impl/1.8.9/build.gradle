@@ -28,8 +28,6 @@ dependencies {
     implementation 'com.github.glassmc:loader:v0.4.0'
 }
 
-compileJava.dependsOn("processResources")
-
 kiln {
     remappers = [new MixinRemapper()]
 }

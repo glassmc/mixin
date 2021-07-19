@@ -2,10 +2,7 @@
   "required": true,
   "compatibilityLevel": "JAVA_8",
   "package": "com.github.glassmc.mixin.client.v1_8_9.mixin",
-  "refmap": "mixins.test.json",
-  "verbose": true,
   "mixins": [
-    "IMixinMinecraftClient",
     "MixinMinecraftClient"
   ]
 }
