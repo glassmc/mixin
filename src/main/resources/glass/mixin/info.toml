@@ -1,6 +1,12 @@
 id = "mixin"
 version = "0.1.0"
+namespace = "com.github.glassmc.mixin"
 
 implementations = [
     "client"
+]
+
+[listeners]
+initialize = [
+    "MixinInitializeListener"
 ]

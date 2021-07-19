@@ -1,17 +1,18 @@
-package com.github.glassmc.mixin.client.v1_8_9;
+package com.github.glassmc.mixin;
 
 import com.github.glassmc.loader.GlassLoader;
 import com.github.glassmc.loader.Listener;
 import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 import org.spongepowered.asm.mixin.transformer.GlassMixinTransformer;
 
-public class ExampleInitializeListener implements Listener {
+public class MixinInitializeListener implements Listener {
 
     @Override
     public void run() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.test.json");
+
+        GlassLoader.getInstance().registerAPI(new Mixin());
+        GlassLoader.getInstance().runHooks("mixin");
 
         GlassLoader.getInstance().registerTransformer(GlassMixinTransformer.class);
     }

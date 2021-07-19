@@ -1,5 +1,9 @@
-apply plugin: 'java-library'
+import org.gradle.api.plugins.internal.JvmPluginsHelper
+
+apply plugin: 'java'
 apply plugin: 'kiln-standard'
+
+JvmPluginsHelper.addApiToSourceSet(sourceSets.main, project.configurations)
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -15,7 +19,15 @@ repositories {
 
 dependencies {
     api project(':')
-    compileOnly 'com.github.glassmc:loader:v0.4.0'
 }
 
-compileJava.dependsOn("processResources")
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}

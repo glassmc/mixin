@@ -2,7 +2,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-apply plugin: 'java-library'
+apply plugin: 'java'
 apply plugin: 'kiln-main'
 
 repositories {
@@ -16,8 +16,8 @@ repositories {
 }
 
 configurations {
-    resolvedApi
-    api.extendsFrom(resolvedApi)
+    resolvedImplementation
+    implementation.extendsFrom(resolvedImplementation)
 }
 
 dependencies {
@@ -25,10 +25,10 @@ dependencies {
         if(shardProject.getBuildFile().exists() && shardProject != project) {
             String name = getName(shardProject)
             Project project = project(name.isEmpty() ? ':' : name)
-            resolvedApi project
+            resolvedImplementation project
         }
     }
-    implementation 'com.github.glassmc:loader:v0.4.0'
+    runtimeOnly 'com.github.glassmc:loader:v0.4.0'
 }
 
 List<Project> collectAllProjects(Project project) {
@@ -47,10 +47,5 @@ String getName(Project project) {
 }
 
 shadowJar {
-    dependencies {
-        configurations = [project.configurations.resolvedApi]
-        /*exclude(dependency {
-            it.configuration != 'runtimeElements'
-        })*/
-    }
+    configurations = [project.configurations.compileClasspath]
 }

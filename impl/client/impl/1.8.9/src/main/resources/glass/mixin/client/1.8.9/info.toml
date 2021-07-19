@@ -1,8 +1,8 @@
 namespace = "com.github.glassmc.mixin.client.v1_8_9"
 
 [listeners]
-initialize = [
-    "ExampleInitializeListener"
+mixin = [
+    "MixinMixinListener"
 ]
 
 [environment]

@@ -1,6 +1,5 @@
 package org.spongepowered.asm.mixin.service.glass;
 
-import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
@@ -15,7 +14,9 @@ public class BytecodeProvider implements IClassBytecodeProvider {
         InputStream classInputStream = this.getClass().getClassLoader().getResourceAsStream(name.replace(".", "/") + ".class");
 
         ClassNode classNode = new ClassNode();
-        ClassReader classReader = new ClassReader(IOUtils.toByteArray(classInputStream));
+        byte[] data = new byte[classInputStream.available()];
+        classInputStream.read(data);
+        ClassReader classReader = new ClassReader(data);
         classReader.accept(classNode, 0);
         return classNode;
     }

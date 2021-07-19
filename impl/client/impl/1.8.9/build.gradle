@@ -1,8 +1,10 @@
-apply plugin: 'java-library'
+apply plugin: 'java'
 apply plugin: 'kiln-standard'
 
+JvmPluginsHelper.addApiToSourceSet(sourceSets.main, project.configurations)
 
 import com.github.glassmc.kiln.standard.CustomRemapper
+import org.gradle.api.plugins.internal.JvmPluginsHelper
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.*
 
@@ -23,13 +25,7 @@ repositories {
 dependencies {
     api project(':impl:client')
     compileOnly minecraft('client', '1.8.9', 'yarn')
-    compileOnly 'com.github.glassmc:loader:v0.4.0'
-
-    api 'org.ow2.asm:asm-tree:9.2'
-    api 'org.ow2.asm:asm-commons:9.2'
-    api 'org.ow2.asm:asm-util:9.2'
-    api 'com.google.guava:guava:30.1.1-jre'
-    api 'org.spongepowered:mixin:0.8.3'
+    implementation 'com.github.glassmc:loader:v0.4.0'
 }
 
 compileJava.dependsOn("processResources")

@@ -1,3 +1,5 @@
+import org.gradle.api.plugins.internal.JvmPluginsHelper
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,8 +14,10 @@ buildscript {
     }
 }
 
-apply plugin: 'java-library'
+apply plugin: 'java'
 apply plugin: 'kiln-standard'
+
+JvmPluginsHelper.addApiToSourceSet(sourceSets.main, project.configurations)
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -28,7 +32,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.github.glassmc:loader:v0.4.0'
+    api 'org.ow2.asm:asm-tree:9.2'
+    api 'org.ow2.asm:asm-commons:9.2'
+    api 'org.ow2.asm:asm-util:9.2'
+    api 'com.google.guava:guava:30.1.1-jre'
     api 'org.spongepowered:mixin:0.8.3'
 }
-
-compileJava.dependsOn("processResources")
