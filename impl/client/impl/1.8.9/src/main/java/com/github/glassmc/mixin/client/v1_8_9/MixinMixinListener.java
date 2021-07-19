@@ -8,7 +8,13 @@ public class MixinMixinListener implements Listener {
 
     @Override
     public void run() {
-        GlassLoader.getInstance().getAPI(Mixin.class).addConfiguration("mixins.test.json");
+        if(this.isDevelopmentEnvironment()) {
+            GlassLoader.getInstance().getAPI(Mixin.class).addConfiguration("mixins.test.json");
+        }
+    }
+
+    private boolean isDevelopmentEnvironment() {
+        return MixinMixinListener.class.getProtectionDomain().getCodeSource().getLocation() == null;
     }
 
 }
