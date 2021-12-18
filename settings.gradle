@@ -1,5 +1,1 @@
-include(
-        ':exec',
-        ':impl:client',
-        ':impl:client:impl:1.8.9'
-)
+rootProject.name = "mixin"
