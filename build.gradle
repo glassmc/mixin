@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:v0.5.13'
+        classpath 'com.github.glassmc:kiln:v0.6.14'
     }
 }
 
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:v0.6.1'
+    implementation 'com.github.glassmc:loader:v0.8.3'
 
     api 'commons-io:commons-io:2.11.0'
 
