@@ -13,12 +13,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:v0.6.14'
+        classpath 'com.github.glassmc:kiln:v0.6.15'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'kiln-main'
+
+group = "com.github.glassmc"
+version = "1.0"
 
 JvmPluginsHelper.addApiToSourceSet(sourceSets.main, project.configurations)
 
@@ -43,7 +46,7 @@ dependencies {
     api 'org.ow2.asm:asm-commons:9.2'
     api 'org.ow2.asm:asm-util:9.2'
     api 'com.google.guava:guava:31.0.1-jre'
-    api 'org.spongepowered:mixin:0.8.3'
+    shadowImplementation 'org.spongepowered:mixin:0.8.3'
 
     compileOnly minecraft('client', '1.8.9', 'yarn')
 }
