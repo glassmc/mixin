@@ -1,6 +1,7 @@
 import org.gradle.api.plugins.internal.JvmPluginsHelper
 import static com.github.glassmc.kiln.standard.DependencyHandlerExtension.*
-import com.github.glassmc.kiln.standard.CustomRemapper
+import com.github.glassmc.kiln.standard.CustomTransformer
+import com.github.glassmc.kiln.standard.environment.*
 import org.objectweb.asm.*
 import org.objectweb.asm.tree.*
 
@@ -16,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.6.18'
+        classpath 'com.github.glassmc:kiln:0.7.1'
     }
 }
 
@@ -41,8 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:0.8.3'
-    implementation 'com.github.glassmc.loader:client:0.8.3'
+    implementation 'com.github.glassmc:loader:0.9.1:mapped'
 
     shadowApi 'commons-io:commons-io:2.11.0'
 
@@ -56,10 +56,11 @@ dependencies {
 }
 
 kiln {
-    remappers = [new MixinRemapper()]
+    environment = new GlassLoaderEnvironment("0.9.0")
+    transformers = [new MixinRemapper()]
 }
 
-class MixinRemapper extends CustomRemapper {
+class MixinRemapper extends CustomTransformer {
 
     private final Map<String, String> mixinClasses = new HashMap<>()
     private Map<String, ClassNode> classNodes
@@ -82,7 +83,7 @@ class MixinRemapper extends CustomRemapper {
                             values.clear()
 
                             for (Type type : oldValues) {
-                                values.add(Type.getType("L" + this.parent.map(type.getClassName().replace(".", "/")) + ";"))
+                                values.add(Type.getType(String.format("L%s;", this.getRemapper().map(type.getClassName().replace(".", "/")))))
                             }
                         }
                     }
@@ -120,7 +121,7 @@ class MixinRemapper extends CustomRemapper {
                                 int splitIndex = string.indexOf('(')
                                 String name = string.substring(0, splitIndex)
                                 String desc = string.substring(splitIndex)
-                                newTargets.add(this.getParent().mapMethodName(this.getMixinClass(className), name, desc) + this.getParent().mapMethodDesc(desc))
+                                newTargets.add(String.format("%s%s", this.getRemapper().mapMethodName(this.getMixinClass(className), name, desc),  this.getRemapper().mapMethodDesc(desc)))
                             }
                             int index = annotationNode.values.indexOf(targets)
                             annotationNode.values.remove(targets)
@@ -139,7 +140,7 @@ class MixinRemapper extends CustomRemapper {
 
                                 int targetIndex = atAnnotation.values.indexOf(target)
                                 atAnnotation.values.remove(target)
-                                atAnnotation.values.add(targetIndex, "L" + this.getParent().map(className1) + ";" + this.getParent().mapMethodName(className1, methodName, methodDesc) + this.getParent().mapMethodDesc(methodDesc))
+                                atAnnotation.values.add(targetIndex, "L" + this.getRemapper().map(className1) + ";" + this.getRemapper().mapMethodName(className1, methodName, methodDesc) + this.getParent().mapMethodDesc(methodDesc))
                             }
                         }
                     }
