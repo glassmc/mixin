@@ -22,17 +22,17 @@ public class GlassMixinTransformer implements Transformer {
 
     @Override
     public boolean canTransform(String name) {
-        return !name.startsWith("org/objectweb") && !name.startsWith("org/spongepowered") && !name.startsWith("com/google");
+        return !name.startsWith("org/objectweb/") && !name.startsWith("org/spongepowered/") && !name.startsWith("com/google/");
     }
 
     @Override
     public byte[] transform(String name, byte[] data) {
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(data);
-        classReader.accept(classNode, ClassReader.EXPAND_FRAMES);
+        classReader.accept(classNode, 0);
 
         if(this.processor.applyMixins(MixinEnvironment.getDefaultEnvironment(), name, classNode)) {
-            ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+            ClassWriter classWriter = new ClassWriter(0);
             classNode.accept(classWriter);
             return classWriter.toByteArray();
         }

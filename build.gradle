@@ -33,6 +33,7 @@ sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven {
         url = 'https://glassmc.ml/repository/'
     }
@@ -56,7 +57,7 @@ dependencies {
 }
 
 kiln {
-    environment = new GlassLoaderEnvironment("0.9.0")
+    environment = new GlassLoaderEnvironment("0.9.1")
     transformers = [new MixinRemapper()]
 }
 
