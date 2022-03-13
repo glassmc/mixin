@@ -1,11 +1,13 @@
 package org.spongepowered.asm.mixin.service.glass;
 
+import com.github.glassmc.loader.api.GlassLoader;
 import org.spongepowered.asm.launch.platform.container.ContainerHandleVirtual;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
 import org.spongepowered.asm.logging.ILogger;
 import org.spongepowered.asm.logging.LoggerAdapterConsole;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.service.*;
+import org.spongepowered.asm.util.Constants;
 import org.spongepowered.asm.util.ReEntranceLock;
 
 import java.io.InputStream;
@@ -109,7 +111,11 @@ public class GlassMixinService implements IMixinService {
 
     @Override
     public String getSideName() {
-        return null;
+        if (GlassLoader.getInstance().getShardVersion("client") != null) {
+            return Constants.SIDE_CLIENT;
+        } else {
+            return Constants.SIDE_SERVER;
+        }
     }
 
     @Override

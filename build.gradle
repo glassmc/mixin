@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.7.5'
+        classpath 'com.github.glassmc:kiln:0.7.6'
     }
 }
 
@@ -44,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:0.9.4:mapped'
+    implementation 'com.github.glassmc:loader:0.9.5:mapped'
 
     shadowApi 'commons-io:commons-io:2.11.0'
 
@@ -56,7 +56,7 @@ dependencies {
 }
 
 kiln {
-    environment = new GlassLoaderEnvironment("0.9.4")
+    environment = new GlassLoaderEnvironment("0.9.5")
     transformers = [new MixinRemapper()]
     minecraft = [
             "client:1.8.9:yarn"
