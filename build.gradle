@@ -1,5 +1,4 @@
 import org.gradle.api.plugins.internal.JvmPluginsHelper
-import static com.github.glassmc.kiln.standard.DependencyHandlerExtension.*
 import com.github.glassmc.kiln.standard.CustomTransformer
 import com.github.glassmc.kiln.standard.environment.*
 import org.objectweb.asm.*
@@ -8,6 +7,7 @@ import org.objectweb.asm.tree.*
 buildscript {
     repositories {
         mavenCentral()
+
         maven {
             url = 'https://glassmc.ml/repository/'
         }
@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.7.1'
+        classpath 'com.github.glassmc:kiln:0.7.5'
     }
 }
 
@@ -51,13 +51,14 @@ dependencies {
     shadowApi 'org.ow2.asm:asm-util:9.2'
     shadowApi 'com.google.guava:guava:31.0.1-jre'
     shadowApi 'org.spongepowered:mixin:0.8.3'
-
-    compileOnly minecraft('client', '1.8.9', 'yarn')
 }
 
 kiln {
     environment = new GlassLoaderEnvironment("0.9.1")
     transformers = [new MixinRemapper()]
+    minecraft = [
+            "client:1.8.9:yarn"
+    ]
 }
 
 class MixinRemapper extends CustomTransformer {
