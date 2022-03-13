@@ -2,6 +2,8 @@ package org.spongepowered.asm.mixin.service.glass;
 
 import org.spongepowered.asm.launch.platform.container.ContainerHandleVirtual;
 import org.spongepowered.asm.launch.platform.container.IContainerHandle;
+import org.spongepowered.asm.logging.ILogger;
+import org.spongepowered.asm.logging.LoggerAdapterConsole;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.service.*;
 import org.spongepowered.asm.util.ReEntranceLock;
@@ -118,6 +120,13 @@ public class GlassMixinService implements IMixinService {
     @Override
     public MixinEnvironment.CompatibilityLevel getMaxCompatibilityLevel() {
         return null;
+    }
+
+    private final ILogger logger = new LoggerAdapterConsole("GlassMixin");
+
+    @Override
+    public ILogger getLogger(String name) {
+        return logger;
     }
 
 }

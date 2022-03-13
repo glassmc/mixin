@@ -2,6 +2,8 @@ id = "mixin"
 version = "0.1.0"
 namespace = "com.github.glassmc.mixin"
 
+internal_loader = "MixinInternalLoader"
+
 implementations = [
     "client"
 ]

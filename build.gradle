@@ -33,6 +33,8 @@ sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+
+    mavenLocal()
     maven {
         url = 'https://glassmc.ml/repository/'
     }
@@ -42,19 +44,19 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:0.9.3:mapped'
+    implementation 'com.github.glassmc:loader:0.9.4:mapped'
 
     shadowApi 'commons-io:commons-io:2.11.0'
 
     shadowApi 'org.ow2.asm:asm-tree:9.2'
     shadowApi 'org.ow2.asm:asm-commons:9.2'
     shadowApi 'org.ow2.asm:asm-util:9.2'
-    shadowApi 'com.google.guava:guava:31.0.1-jre'
-    shadowApi 'org.spongepowered:mixin:0.8.3'
+    shadowApi 'com.google.guava:guava:31.1-jre'
+    shadowApi 'org.spongepowered:mixin:0.8.5'
 }
 
 kiln {
-    environment = new GlassLoaderEnvironment("0.9.1")
+    environment = new GlassLoaderEnvironment("0.9.4")
     transformers = [new MixinRemapper()]
     minecraft = [
             "client:1.8.9:yarn"

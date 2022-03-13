@@ -15,9 +15,10 @@ public class GlassMixinTransformer implements Transformer {
         MixinEnvironment environment = MixinEnvironment.getDefaultEnvironment();
         SyntheticClassRegistry syntheticClassRegistry = new SyntheticClassRegistry();
         Extensions extensions = new Extensions(syntheticClassRegistry);
-        this.processor = new MixinProcessor(environment, extensions, null);
+        MixinCoprocessorNestHost mixinCoprocessorNestHost = new MixinCoprocessorNestHost();
+        this.processor = new MixinProcessor(environment, extensions, null, mixinCoprocessorNestHost);
 
-        DefaultExtensions.create(environment, extensions, syntheticClassRegistry);
+        DefaultExtensions.create(environment, extensions, syntheticClassRegistry, mixinCoprocessorNestHost);
     }
 
     @Override
