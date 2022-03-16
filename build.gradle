@@ -17,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.7.6'
+        classpath 'com.github.glassmc:kiln:0.7.7'
     }
 }
 
@@ -34,7 +34,6 @@ sourceCompatibility = targetCompatibility = 1.8
 repositories {
     mavenCentral()
 
-    mavenLocal()
     maven {
         url = 'https://glassmc.ml/repository/'
     }
@@ -148,7 +147,13 @@ class MixinRemapper extends CustomTransformer {
                         }
                     }
                 }
+            }
+        }
 
+        for (String className : classNodes.keySet()) {
+            ClassNode classNode = classNodes.get(className)
+
+            for (MethodNode methodNode : classNode.methods) {
                 for(AbstractInsnNode node : methodNode.instructions.toArray()) {
                     if(node instanceof FieldInsnNode) {
                         if(this.getMixinClass(node.owner) != null) {
@@ -156,6 +161,9 @@ class MixinRemapper extends CustomTransformer {
                         }
                     }
                     if(node instanceof MethodInsnNode) {
+                        if (node.owner.contains("Mixin")) {
+                            println(node.owner + " " + this.getMixinClass(node.owner))
+                        }
                         if(this.getMixinClass(node.owner) != null) {
                             node.name = this.mapMethodName(node.owner, node.name, node.desc)
                         }
@@ -174,7 +182,7 @@ class MixinRemapper extends CustomTransformer {
             String prefix = methodName.startsWith("invoke") ? "invoke" : "call"
             String strippedName = methodName.replace(prefix, "")
             strippedName = strippedName.charAt(0).toLowerCase().toString() + strippedName.substring(1)
-            methodName = this.getParent().mapMethodName(mixinClass, strippedName, methodDesc)
+            methodName = this.getRemapper().mapMethodName(mixinClass, strippedName, methodDesc)
             if(methodName != strippedName) {
                 changed = true
             }
@@ -183,7 +191,7 @@ class MixinRemapper extends CustomTransformer {
             String prefix = methodName.startsWith("get") ? "get" : methodName.startsWith("set") ? "set" : "is"
             String strippedName = methodName.replace(prefix, "")
             strippedName = strippedName.charAt(0).toLowerCase().toString() + strippedName.substring(1)
-            methodName = this.getParent().mapFieldName(mixinClass, strippedName, methodDesc)
+            methodName = this.getRemapper().mapFieldName(mixinClass, strippedName, methodDesc)
             if(methodName != strippedName) {
                 changed = true
             }
@@ -191,7 +199,7 @@ class MixinRemapper extends CustomTransformer {
         }
 
         if(!changed) {
-            methodName = this.getParent().mapMethodName(mixinClass, methodName, methodDesc)
+            methodName = this.getRemapper().mapMethodName(mixinClass, methodName, methodDesc)
         }
         return methodName
     }

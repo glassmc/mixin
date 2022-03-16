@@ -2,6 +2,7 @@
   "package": "com.github.glassmc.mixin.client.v1_8_9.mixin",
   "minVersion": "0.8.3",
   "mixins": [
-    "MixinMinecraftClient"
+    "MixinMinecraftClient",
+    "IMixinMinecraftClient"
   ]
 }

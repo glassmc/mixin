@@ -1,28 +1,33 @@
 package org.spongepowered.asm.mixin.service.glass;
 
-import org.apache.commons.io.IOUtils;
+import com.github.glassmc.loader.api.GlassLoader;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.service.IClassBytecodeProvider;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BytecodeProvider implements IClassBytecodeProvider {
 
-    @Override
-    public ClassNode getClassNode(String name) throws IOException {
-        InputStream classInputStream = this.getClass().getClassLoader().getResourceAsStream(name.replace(".", "/") + ".class");
+    private final List<String> ignore = new ArrayList<>();
 
+    @Override
+    public ClassNode getClassNode(String name) {
+        this.ignore.add(name);
         ClassNode classNode = new ClassNode();
-        ClassReader classReader = new ClassReader(IOUtils.toByteArray(classInputStream));
+        ClassReader classReader = new ClassReader(GlassLoader.getInstance().getClassBytes(name.replace(".", "/")));
         classReader.accept(classNode, 0);
         return classNode;
     }
 
     @Override
-    public ClassNode getClassNode(String name, boolean runTransformers) throws IOException {
+    public ClassNode getClassNode(String name, boolean runTransformers) {
         return this.getClassNode(name);
+    }
+
+    public List<String> getIgnore() {
+        return ignore;
     }
 
 }

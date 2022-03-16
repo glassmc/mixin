@@ -5,14 +5,17 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.service.glass.BytecodeProvider;
 import org.spongepowered.asm.mixin.transformer.ext.Extensions;
+import org.spongepowered.asm.service.MixinService;
 
 public class GlassMixinTransformer implements Transformer {
 
+    private final MixinEnvironment environment;
     private final MixinProcessor processor;
 
     public GlassMixinTransformer() {
-        MixinEnvironment environment = MixinEnvironment.getDefaultEnvironment();
+        this.environment = MixinEnvironment.getDefaultEnvironment();
         SyntheticClassRegistry syntheticClassRegistry = new SyntheticClassRegistry();
         Extensions extensions = new Extensions(syntheticClassRegistry);
         MixinCoprocessorNestHost mixinCoprocessorNestHost = new MixinCoprocessorNestHost();
@@ -32,10 +35,14 @@ public class GlassMixinTransformer implements Transformer {
         ClassReader classReader = new ClassReader(data);
         classReader.accept(classNode, 0);
 
-        if(this.processor.applyMixins(MixinEnvironment.getDefaultEnvironment(), name, classNode)) {
+        BytecodeProvider bytecodeProvider = (BytecodeProvider) MixinService.getService().getBytecodeProvider();
+
+        if(!bytecodeProvider.getIgnore().contains(name) && this.processor.applyMixins(this.environment, name, classNode)) {
             ClassWriter classWriter = new ClassWriter(0);
             classNode.accept(classWriter);
             return classWriter.toByteArray();
+        } else {
+            bytecodeProvider.getIgnore().remove(name);
         }
 
         return data;
