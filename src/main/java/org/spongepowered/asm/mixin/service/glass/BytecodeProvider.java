@@ -13,7 +13,7 @@ public class BytecodeProvider implements IClassBytecodeProvider {
     private final List<String> ignore = new ArrayList<>();
 
     @Override
-    public ClassNode getClassNode(String name) {
+    public ClassNode getClassNode(String name) throws ClassNotFoundException {
         this.ignore.add(name);
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(GlassLoader.getInstance().getClassBytes(name.replace(".", "/")));
@@ -22,7 +22,7 @@ public class BytecodeProvider implements IClassBytecodeProvider {
     }
 
     @Override
-    public ClassNode getClassNode(String name, boolean runTransformers) {
+    public ClassNode getClassNode(String name, boolean runTransformers) throws ClassNotFoundException {
         return this.getClassNode(name);
     }
 

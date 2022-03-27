@@ -37,14 +37,15 @@ public class GlassMixinTransformer implements Transformer {
 
         BytecodeProvider bytecodeProvider = (BytecodeProvider) MixinService.getService().getBytecodeProvider();
 
+        //System.out.println(name + " " + bytecodeProvider.getIgnore().contains(name) + " " + this.processor.applyMixins(this.environment, name, classNode));
+
         if(!bytecodeProvider.getIgnore().contains(name) && this.processor.applyMixins(this.environment, name, classNode)) {
-            ClassWriter classWriter = new ClassWriter(0);
+            ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
             classNode.accept(classWriter);
             return classWriter.toByteArray();
         } else {
             bytecodeProvider.getIgnore().remove(name);
+            return data;
         }
-
-        return data;
     }
 }
