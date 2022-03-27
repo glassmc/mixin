@@ -13,6 +13,7 @@ public class GlassMixinTransformer implements Transformer {
 
     private final MixinEnvironment environment;
     private final MixinProcessor processor;
+    private final MixinTransformer mixinTransformer = new MixinTransformer();
 
     public GlassMixinTransformer() {
         this.environment = MixinEnvironment.getDefaultEnvironment();
@@ -37,12 +38,8 @@ public class GlassMixinTransformer implements Transformer {
 
         BytecodeProvider bytecodeProvider = (BytecodeProvider) MixinService.getService().getBytecodeProvider();
 
-        //System.out.println(name + " " + bytecodeProvider.getIgnore().contains(name) + " " + this.processor.applyMixins(this.environment, name, classNode));
-
-        if(!bytecodeProvider.getIgnore().contains(name) && this.processor.applyMixins(this.environment, name, classNode)) {
-            ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            classNode.accept(classWriter);
-            return classWriter.toByteArray();
+        if(!bytecodeProvider.getIgnore().contains(name)) {
+            return this.mixinTransformer.transformClassBytes(name, name, data);
         } else {
             bytecodeProvider.getIgnore().remove(name);
             return data;
