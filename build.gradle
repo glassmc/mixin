@@ -8,7 +8,6 @@ buildscript {
     repositories {
         mavenCentral()
 
-        mavenLocal()
         maven {
             url = 'https://glassmc.ml/repository/'
         }
@@ -18,7 +17,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.8.1'
+        classpath 'com.github.glassmc:kiln:0.8.2'
     }
 }
 
@@ -127,6 +126,7 @@ class MixinRemapper extends CustomTransformer {
                                 annotationNode.desc == "Lorg/spongepowered/asm/mixin/Overwrite;" ||
                                 annotationNode.desc == "Lorg/spongepowered/asm/mixin/Shadow;") {
                             methodNode.name = this.mapMethodName(className, methodNode.name, methodNode.desc)
+                            println(methodNode.name)
                         }
                     }
 
@@ -242,12 +242,6 @@ class MixinRemapper extends CustomTransformer {
     private String mapMethodName(String className, String methodName, String methodDesc) {
         String mixinClass = this.getMixinClass(className)
 
-        String methodName2 = this.getRemapper().mapMethodName(mixinClass, methodName, methodDesc)
-
-        if (methodName2 != methodName) {
-            return methodName2
-        }
-
         if(methodName.startsWith("invoke") || methodName.startsWith("call")) {
             String prefix = methodName.startsWith("invoke") ? "invoke" : "call"
             String strippedName = methodName.replace(prefix, "")
@@ -260,6 +254,12 @@ class MixinRemapper extends CustomTransformer {
             strippedName = strippedName.charAt(0).toLowerCase().toString() + strippedName.substring(1)
             methodName = this.getRemapper().mapFieldName(mixinClass, strippedName, methodDesc)
             methodName = prefix + methodName.charAt(0).toUpperCase().toString() + methodName.substring(1)
+        }
+
+        String methodName2 = this.getRemapper().mapMethodName(mixinClass, methodName, methodDesc)
+
+        if (methodName2 != methodName) {
+            return methodName2
         }
 
         return methodName

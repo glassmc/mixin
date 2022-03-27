@@ -13,7 +13,7 @@ public class MixinMinecraftClient {
 
     @Inject(method = "tick()V", at = @At("HEAD"))
     public void onTick(CallbackInfo callbackInfo) {
-        //System.out.println(((IMixinMinecraftClient) MinecraftClient.getInstance()).getCameraEntity());
+        System.out.println(((IMixinMinecraftClient) MinecraftClient.getInstance()).getCameraEntity());
     }
 
 }

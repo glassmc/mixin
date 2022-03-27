@@ -14,7 +14,7 @@ public class MixinMixinListener implements Listener {
     }
 
     private boolean isDevelopmentEnvironment() {
-        return true;
+        return false;
         //return MixinMixinListener.class.getProtectionDomain().getCodeSource().getLocation() == null;
     }
 
