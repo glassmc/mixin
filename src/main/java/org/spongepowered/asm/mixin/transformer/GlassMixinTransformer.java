@@ -2,7 +2,6 @@ package org.spongepowered.asm.mixin.transformer;
 
 import com.github.glassmc.loader.api.loader.Transformer;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.service.glass.BytecodeProvider;
@@ -11,16 +10,13 @@ import org.spongepowered.asm.service.MixinService;
 
 public class GlassMixinTransformer implements Transformer {
 
-    private final MixinEnvironment environment;
-    private final MixinProcessor processor;
     private final MixinTransformer mixinTransformer = new MixinTransformer();
 
     public GlassMixinTransformer() {
-        this.environment = MixinEnvironment.getDefaultEnvironment();
+        MixinEnvironment environment = MixinEnvironment.getDefaultEnvironment();
         SyntheticClassRegistry syntheticClassRegistry = new SyntheticClassRegistry();
         Extensions extensions = new Extensions(syntheticClassRegistry);
         MixinCoprocessorNestHost mixinCoprocessorNestHost = new MixinCoprocessorNestHost();
-        this.processor = new MixinProcessor(environment, extensions, null, mixinCoprocessorNestHost);
 
         DefaultExtensions.create(environment, extensions, syntheticClassRegistry, mixinCoprocessorNestHost);
     }
