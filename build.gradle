@@ -4,7 +4,6 @@ import com.github.glassmc.kiln.standard.environment.*
 
 buildscript {
     repositories {
-        mavenLocal()
         mavenCentral()
 
         maven {
@@ -16,7 +15,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.8.9'
+        classpath 'com.github.glassmc:kiln:0.8.10'
     }
 }
 
