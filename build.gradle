@@ -4,6 +4,7 @@ import com.github.glassmc.kiln.standard.environment.*
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
 
         maven {
@@ -15,7 +16,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.glassmc:kiln:0.8.8'
+        classpath 'com.github.glassmc:kiln:0.8.9'
     }
 }
 
@@ -46,21 +47,21 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.glassmc:loader:0.9.6'
+    implementation 'com.github.glassmc:loader:0.9.9'
 
-    api 'commons-io:commons-io:2.11.0'
+    shadowApi 'commons-io:commons-io:2.11.0'
 
     api 'org.ow2.asm:asm-tree:9.2'
     api 'org.ow2.asm:asm-commons:9.2'
-    api 'org.ow2.asm:asm-util:9.2'
-    api 'com.google.guava:guava:31.1-jre'
-    api 'org.spongepowered:mixin:0.8.5'
+    shadowApi 'org.ow2.asm:asm-util:9.2'
+    shadowApi 'com.google.guava:guava:31.1-jre'
+    shadowApi 'org.spongepowered:mixin:0.8.5'
 
     compileOnly 'net.minecraft:client-1.8.9:yarn'
 }
 
 kiln {
-    environment = new GlassLoaderEnvironment("0.9.6")
+    environment = new GlassLoaderEnvironment("0.9.9")
     transformers = [new MixinRemapper()]
 }
 
